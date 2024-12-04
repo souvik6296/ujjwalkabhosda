@@ -494,48 +494,36 @@ int main() {
 
 
 const all = `
-Prevention of race condition using semaphore
 
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <semaphore.h>
+race condition using semaphore optimized
 
-#define NUM_THREADS 3
+#include<stdio.h>
+#include<pthread.h>
+#include<semaphore.h>
 
-int shared = 0;
-sem_t semaphore;
-void *thread_func(void *arg) {
-    int id = *(int *) arg;
-    int local = 0;
-    sem_wait(&semaphore);
-    for (int i = 0; i < 1000000; i++) {
-    local = shared;
-    local++;
-    shared = local;
-    }
-    printf("Thread %d: shared = %d\n", id, shared);
-    sem_post(&semaphore);
-    pthread_exit(NULL);
+int sv=0;
+sem_t sem;
+void *f1(void *arg){
+
+for(int i=0; i<100000; i++){
+sem_wait(&sem);
+sv++;
+sem_post(&sem);
 }
-
-int main() {
-    pthread_t threads[NUM_THREADS];
-    int thread_ids[NUM_THREADS];
-    sem_init(&semaphore,0,1);
-    for (int i = 0; i < NUM_THREADS; i++) {
-    thread_ids[i] = i;
-    pthread_create(&threads[i], NULL, thread_func, (void *) &thread_ids[i]);
-    }
-
-    for (int i = 0; i < NUM_THREADS; i++) {
-    pthread_join(threads[i], NULL);
-    }
-
-    printf("Final value of shared = %d\n", shared);
-    sem_destroy(&semaphore);
-    return 0;
 }
+int main(){
+pthread_t t1;
+pthread_t t2;
+sem_init(&sem,0,1);
+pthread_create(&t1,NULL,f1,NULL);
+pthread_create(&t2,NULL,f1,NULL);
+pthread_join(t1,NULL);
+pthread_join(t2,NULL);
+sem_destroy(&sem);
+printf("Expected value: 200000\n");
+printf("Actual value: %d\n",sv);
+return 0;
+
 
 
 
@@ -582,6 +570,37 @@ int main() {
 
     return 0;
 }
+
+rc using mutex optimized
+
+#include<stdio.h>
+#include<pthread.h>
+int sv=0;
+pthread_mutex_t m;
+void *f1(void *arg){
+
+for(int i=0; i<100000; i++){
+pthread_mutex_lock(&m);
+sv++;
+pthread_mutex_unlock(&m);
+}
+}
+int main(){
+pthread_t t1;
+pthread_t t2;
+pthread_mutex_init(&m,NULL);
+pthread_create(&t1,NULL,f1,NULL);
+pthread_create(&t2,NULL,f1,NULL);
+pthread_join(t1,NULL);
+pthread_join(t2,NULL);
+pthread_mutex_destroy(&m);
+printf("Expected value: 200000\n");
+printf("Actual value: %d\n",sv);
+return 0;
+
+
+
+
 
 
 
@@ -637,19 +656,6 @@ return 0;
 
 
 Interprocess Communication using mkfifo()
-
-
-The mkfifo system call is used to create a special type of file in Unix and Unix-like operating systems called a named pipe, or FIFO (first in, first out). A named pipe is a type of inter-process communication (IPC) mechanism that allows two or more processes to communicate with each other by reading and writing to a common "file".
-
-The mkfifo system call takes a path name as an argument and creates a new named pipe with that name.
-
-int mkfifo(const char *pathname, mode_t mode);
-
-The pathname argument specifies the name of the named pipe to be created. The mode argument specifies the file permissions of the named pipe.
-
-
-Exercise 1
-Write a C program that creates a named pipe (FIFO) using the mkfifo system call. Then, fork a child process. In the parent process, write some data to the pipe using the write system call. In the child process, read the data from the pipe using the read system call.
 
 #include <stdio.h>
 #include <unistd.h>
