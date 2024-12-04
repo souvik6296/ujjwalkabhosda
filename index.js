@@ -1136,6 +1136,39 @@ closedir(dp);
 return 0;
 }
 
+parent and child process using wait
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+int main(){
+pid_t pid;
+int status;
+pid=fork();
+if (pid ==-1){
+printf("error failed \n");
+exit(1);
+}
+
+
+else if (pid==0){
+printf("printing child process : %d \n",getpid());
+sleep(2);
+printf("child process exiting \n");
+exit(0);
+}
+else{
+printf("parent process waiting for child process \n");
+wait(&status);
+printf("child process exited with status %d \n",status);
+}
+
+
+return 0;
+}
 
 
 
