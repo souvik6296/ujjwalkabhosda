@@ -1171,6 +1171,55 @@ return 0;
 }
 
 
+orphan process
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+
+int main(){
+
+pid_t child=fork();
+if(child>0){
+printf("parent id : %d is exiting \n",getpid());
+exit(0);
+}
+else if (child==0){
+printf("child id: %d and parent process id : %d \n",getpid(),getppid());
+sleep(10);
+printf ("after sleeping\n");
+printf("child id : %d and parentid %d \n",getpid(),getppid());
+}
+
+return 0;
+}
+
+
+zombie process
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main(){
+pid_t pid=fork();
+if(pid>0){
+sleep(20);
+printf("parent id: %d \n",getpid());
+}
+else if (pid==0){
+printf("child id : %d  \n",getpid());
+exit(0);
+}
+
+
+
+return 0;
+}
+
 
 
 
