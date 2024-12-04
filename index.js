@@ -1080,6 +1080,36 @@ int main() {
 
 hello
 
+
+
+
+
+#include<stdio.h>
+#include<pthread.h>
+struct data{
+int x;
+int y;
+};
+
+void *add(void *arg){
+int num1=((struct data*)arg)->x;
+int num2=((struct data*)arg)->y;
+printf("%d + %d = %d",num1,num2,num1+num2);
+return NULL;
+}
+int main(){
+pthread_t thread;
+printf("Enter num1 and num2: ");
+int num1,num2;
+scanf("%d %d",&num1,&num2);
+struct data d1;
+d1.x=num1;
+d1.y=num2;
+pthread_create(&thread,NULL,add,&d1);
+pthread_join(thread, NULL);
+return 0;
+}
+
 `;
 
 
