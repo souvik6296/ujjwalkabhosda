@@ -1083,7 +1083,7 @@ hello
 
 
 
-
+add two no in thread
 #include<stdio.h>
 #include<pthread.h>
 struct data{
@@ -1109,6 +1109,38 @@ pthread_create(&thread,NULL,add,&d1);
 pthread_join(thread, NULL);
 return 0;
 }
+
+display all directory content
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+
+
+int main(int argc, char *argv[])
+{
+DIR *dp;
+struct dirent *direntPt;
+dp=opendir(argv[1]);
+while((direntPt=readdir(dp))!=NULL){
+printf("%s",direntPt->d_name);
+
+}
+closedir(dp);
+
+
+
+
+return 0;
+}
+
+
+
+
+
+
 
 `;
 
